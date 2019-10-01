@@ -1,27 +1,9 @@
 ## Project: Build a Traffic Sign Recognition Program
-[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
 Overview
 ---
-In this project, you will use what you've learned about deep neural networks and convolutional neural networks to classify traffic signs. You will train and validate a model so it can classify traffic sign images using the [German Traffic Sign Dataset](http://benchmark.ini.rub.de/?section=gtsrb&subsection=dataset). After the model is trained, you will then try out your model on images of German traffic signs that you find on the web.
+This project uses the Lenet-5 Convolutional Neural Network introduced in the lesson to classify German traffic signs.
 
-We have included an Ipython notebook that contains further instructions 
-and starter code. Be sure to download the [Ipython notebook](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb). 
-
-We also want you to create a detailed writeup of the project. Check out the [writeup template](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/writeup_template.md) for this project and use it as a starting point for creating your own writeup. The writeup can be either a markdown file or a pdf document.
-
-To meet specifications, the project will require submitting three files: 
-* the Ipython notebook with the code
-* the code exported as an html file
-* a writeup report either as a markdown or pdf file 
-
-Creating a Great Writeup
----
-A great writeup should include the [rubric points](https://review.udacity.com/#!/rubrics/481/view) as well as your description of how you addressed each point.  You should include a detailed description of the code used in each step (with line-number references and code snippets where necessary), and links to other supporting documents or external references.  You should include images in your writeup to demonstrate how your code works with examples.  
-
-All that said, please be concise!  We're not looking for you to write a book here, just a brief description of how you passed each rubric point, and references to the relevant code :). 
-
-You're not required to use markdown for your writeup.  If you use another method please just submit a pdf of your writeup.
 
 The Project
 ---
@@ -33,26 +15,149 @@ The goals / steps of this project are the following:
 * Analyze the softmax probabilities of the new images
 * Summarize the results with a written report
 
-### Dependencies
-This lab requires:
+Data Set Summary & Exploration
+---
+##### Data Set Summary:
+I used the pandas library to calculate summary statistics of the traffic signs data set:
 
-* [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit)
+Number of training examples = 34799.
+Number of validation examples = 4410.
+Number of testing examples = 12630.
+Image data shape = (32, 32, 3).
+Number of classes = 43.
 
-The lab environment can be created with CarND Term1 Starter Kit. Click [here](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) for the details.
+##### An exploratory visualization of the data set:
+Below is a visualization of the data set.
+* The first two rows are from the training data.
+* The middle two rows are from the validation data.
+* The last two rows are from the test data set.
 
-### Dataset and Repository
+![image1](../P4_TSC/dataexplore.png)
 
-1. Download the data set. The classroom has a link to the data set in the "Project Instructions" content. This is a pickled dataset in which we've already resized the images to 32x32. It contains a training, validation and test set.
-2. Clone the project, which contains the Ipython notebook and the writeup template.
-```sh
-git clone https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project
-cd CarND-Traffic-Sign-Classifier-Project
-jupyter notebook Traffic_Sign_Classifier.ipynb
-```
+Design and Test a Model Architecture
+---
 
-### Requirements for Submission
-Follow the instructions in the `Traffic_Sign_Classifier.ipynb` notebook and write the project report using the writeup template as a guide, `writeup_template.md`. Submit the project code and writeup document.
+### Normalize the image.
+I used the formula provided (pixel - 128)/ 128) to normalize the RGB of a image.
 
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+Example below:
+![image2](../P4_TSC/norm_img.png)
 
+### Model Architecture:
+
+The final architure is
+
+| Layer    |Layer Name   	 | Description	        					|
+|:--------:|:--------------------:|:--------------------------------------------:|
+|          |Input          | Normalized 32x32x3 RGB image   							|
+|  1       |Convolution 5x5     	| 1x1 stride, valid padding, outputs 38x38x6 	|
+|          |RELU		              |Activates the output of the 1st layer|
+|          |Conv1 Dropout | Using dropout to prevent overfitting.
+| |Max pooling	      	| 2x2 stride, Input: 28x28x6  outputs 14x14x6 		|
+| 2  |Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x6 |
+| |RELU		 |Activates the output of the 2nd layer
+|          |Conv2 Dropout | Using dropout to prevent overfitting.
+|          |Max pooling	  | 2x2 stride, Input: 28x28x6  outputs 5x5x16. 		|
+|          |Flatten       | Flatten the from 5x5x16 to 400|
+| 3        |Fully connected		|  Inputs: 400 Output:120   									|
+| |RELU		 |Activates the output of the 3rd layer
+|          |Fully connected Dropout | Using dropout to prevent overfitting.
+| 4        |Fully connected		| Inputs: 120 Output:84         									|
+|          |RELU		 |Activates the output of the 3rd layer|
+|          |Fully connected Dropout | Using dropout to prevent overfitting.
+| 5        |Fully connected		| Inputs: 84 Output:43         									|
+| |Softmax				| Outputs probability of 43 classes.							        	|
+
+### Training process:
+
+To train the model, I used an AdamOptimizer, 20 Epochs, 128 batches, and a learning rate of 0.005.
+
+### Model Results and Solution Approach
+
+##### Model Results:
+
+At the end of the epochs the accuracy results are as follows:
+* Training Accuracy of 98.7%
+* Validation Accuracy of 93.1%
+* Test Accuracy of 91.8%
+
+##### Solution Approach
+I took a well know architecture approach. This project uses a Lenet-5 based CNN architecture and added dropouts to prevent overfitting.
+
+The Lenet-5 architecture is suitable for this project because it was used to classify images for 20 classes. It is expanded to classify 43 classes of images.
+
+The initial learning rate of the 0.01 was not reaching the 93% accuracy requirement. I lowered the learning rate by half to 0.005 and was getting better accuracy and consistent results with 20 epochs.
+
+As shown in the section above, the validation accuracy is at 93.2% which meets the requirement for the project. The training accuracy is very high which support that the correct weights are found using the architecture. The test accuracy is within a little bit over 1 percent of the validation accuracy.
+
+Testing Images on Model
+---
+##### Five German traffic signs:
+![image3](../P4_TSC/5img.png)
+
+The slippery road image maybe hard to detect because it might look like pedestrian to model.
+
+##### Prediction Results
+|Image     | Prediction           |
+|:--------:|:--------------------:|
+|Speed limit (60km/h)| Speed limit (60km/h)|
+|Stop|Stop|
+|Pedestrians| Slippery Road|
+|Right-of-way at the next intersection|Right-of-way at the next intersection|
+|Road work|Road work|
+
+The model predicted 4 out of 5 images correctly giving 80% accuracy. Five images from the test set was predicted  92.8%. The discrepancy is probably due to the loss of resolution from resizing of the image for the slippery road
+
+##### Observing Softmax Of Each Images
+
+The code for making predictions on my final model is located in the last cell of the Ipython notebook.
+
+The first image Softmax give 100% certainty it is the right prediction. Below are the top five probabilities.
+
+|Probability     | Sign Name           |
+|:--------------:|:-------------------:|
+| 1.00|Speed limit (60km/h)|
+| 9.52e-20|Speed limit (80km/h)|
+|4.53e-31|No passing for vehicles over 3.5 metric tons|
+|7.12e-35|Speed limit (100km/h)|
+|2.85e-35|Dangerous curve to the right|
+
+The second image Softmax give 99.99% certainty it is the the right prediction. Below are the top five probabilities.
+
+|Probability     | Sign Name           |
+|:--------------:|:-------------------:|
+| 1.00|Stop|
+| 6.39e-04|Priority road|
+|8.80e-11|No entry|
+|6.39e-12|No passing|
+|1.37e-12|Speed limit (20km/h)|
+
+The third image Softmax give 73.8% certainty it is the wrong prediction. Below are the top five probabilities.
+
+|Probability     | Sign Name           |
+|:--------------:|:-------------------:|
+| 0.738|Pedestrians|
+| 0.262|Right-of-way at the next intersection|
+|2.94e-06|General caution|
+|2.59e-09|Traffic signals|
+|1.55e-09|Wild animals crossing|
+
+The fourth image Softmax give 100% certainty it is the prediction prediction. Below are the top five probabilities.
+
+|Probability     | Sign Name           |
+|:--------------:|:-------------------:|
+| 1.00|Right-of-way at the next intersection|
+| 3.26e-27|End of no passing by vehicles over 3.5 metric tons|
+|4.31e-30|Beware of ice/snow|
+|8.13e-32|Traffic signals|
+|2.14e-32|Priority road|
+
+The fifth image Softmax give 100% certainty it is the prediction prediction. Below are the top five probabilities.
+
+|Probability     | Sign Name           |
+|:--------------:|:-------------------:|
+|1.00|Right-of-way at the next intersection|
+|0.00|Speed limit (20km/h)|
+|0.00|Speed limit (30km/h)|
+|0.00|Speed limit (50km/h)|
+|0.00|Speed limit (60km/h)|
