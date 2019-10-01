@@ -32,7 +32,7 @@ Below is a visualization of the data set.
 * The middle two rows are from the validation data.
 * The last two rows are from the test data set.
 
-![image1](../P4_TSC/dataexplore.png)
+![image1](dataexplore.png)
 
 Design and Test a Model Architecture
 ---
@@ -41,7 +41,7 @@ Design and Test a Model Architecture
 I used the formula provided (pixel - 128)/ 128) to normalize the RGB of a image.
 
 Example below:
-![image2](../P4_TSC/norm_img.png)
+![image2](norm_img.png)
 
 ### Model Architecture:
 
@@ -93,7 +93,7 @@ As shown in the section above, the validation accuracy is at 93.2% which meets t
 Testing Images on Model
 ---
 ##### Five German traffic signs:
-![image3](../P4_TSC/5img.png)
+![image3](5img.png)
 
 The slippery road image maybe hard to detect because it might look like pedestrian to model.
 
